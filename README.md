@@ -38,8 +38,9 @@ porta 22 na internet. Detalhes em [docs/ssh.md](docs/ssh.md) e
 | [docs/ssh.md](docs/ssh.md) | Servidor e cliente SSH, chaves, configuração atual, hardening pendente |
 | [docs/tailscale.md](docs/tailscale.md) | Rede privada, dispositivos, comandos, troubleshooting |
 | [docs/seguranca.md](docs/seguranca.md) | Postura atual, riscos abertos, pendências priorizadas |
-| [docs/docker.md](docs/docker.md) | Instalação, conceitos, decisão sobre o grupo `docker`, comandos do dia a dia |
+| [docs/docker.md](docs/docker.md) | Instalação, conceitos, decisão sobre o grupo `docker`, Docker vs `ufw`, comandos do dia a dia |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Problemas reais encontrados, causa e solução |
+| [notes/](notes/) | Código explicado bloco por bloco — material de estudo, separado da documentação de infraestrutura |
 
 ## Estado do laboratório
 
@@ -54,8 +55,9 @@ Etapas concluídas:
       (todos os P0/P1/P2 de [docs/seguranca.md](docs/seguranca.md) resolvidos)
 - [x] Git/GitHub para este repositório — [github.com/jvbapttista/srv-ubnt-lab](https://github.com/jvbapttista/srv-ubnt-lab)
 - [x] Docker instalado (v29.7.2 + Compose v5.4.0) — ver [docs/docker.md](docs/docker.md)
-- [ ] **Docker Compose (primeiro projeto multi-container) — próxima etapa**
-- [ ] Aplicações
+- [x] Primeiro projeto Compose: [Contador de Visitas](projects/contador-visitas/) (Flask em POO + Redis)
+- [ ] **Instalar `iptables-persistent` e validar regras `DOCKER-USER` após reboot — próximo passo**
+- [ ] Mais aplicações/projetos
 - [ ] Monitoramento / Observabilidade
 - [ ] Kubernetes
 - [ ] Integração com OCI
@@ -73,6 +75,8 @@ Pendências menores (P3, sem urgência) em [docs/seguranca.md](docs/seguranca.md
 - Cada projeto hospedado no laboratório ganha um `README.md` pensado também como
   material de portfólio (contexto, problema resolvido, decisões técnicas, não só "como
   rodar") — os projetos serão documentados para publicação no LinkedIn.
+- Todo código (`.py`, `Dockerfile`, `docker-compose.yml`, etc.) ganha uma explicação
+  bloco por bloco em [notes/](notes/), mantida atualizada conforme o código evolui.
 - Arquivos que o sistema exige em caminhos próprios (`/etc`, `/var`, `/opt`) permanecem lá;
   quando relevante, mantemos aqui uma **cópia de referência** em `configs/`, claramente
   marcada como cópia — nunca como fonte de verdade.

@@ -140,9 +140,9 @@ Documentação completa (conceitos, ACLs, troubleshooting) em [tailscale.md](tai
 | `lm-sensors` | instalado | monitoramento de temperatura sob demanda (`sensors`) |
 | `unattended-upgrades` | ativo | atualizações de segurança automáticas |
 | Docker | ativo, `v29.7.2` + Compose `v5.4.0` | instalado via repo oficial em 2026-08-16, ver [docker.md](docker.md) |
+| Contador de Visitas (Flask + Redis) | ativo, via Compose | primeiro projeto hospedado — ver seção 6 |
 
-Nenhuma aplicação ou projeto hospedado até o momento. Esta tabela será atualizada
-conforme novos serviços entrarem.
+Esta tabela é atualizada conforme novos serviços/projetos entrarem.
 
 ---
 
@@ -170,20 +170,34 @@ Toda a documentação, scripts e configuração versionável do laboratório fic
 
 ```text
 /home/joao/Documentos/SRV_UBNT/
-├── README.md          índice geral
-├── docs/               ← você está aqui
+├── README.md                  índice geral
+├── docs/                      documentação técnica da infraestrutura
 │   ├── arquitetura.md
 │   ├── inventario.md
 │   ├── rede.md
 │   ├── ssh.md
 │   ├── tailscale.md
 │   ├── seguranca.md
-│   ├── servidor.md      ← este arquivo
+│   ├── docker.md
+│   ├── servidor.md            ← este arquivo
 │   └── troubleshooting.md
-├── projects/            (a criar quando houver o primeiro projeto)
-├── docker/              (a criar quando o Docker entrar)
-└── scripts/             (a criar conforme necessário)
+├── notes/                     código explicado, bloco por bloco (estudo/referência)
+│   ├── README.md
+│   └── contador-visitas/
+│       └── app.py.md
+├── projects/                  código funcional de cada projeto hospedado
+│   └── contador-visitas/
+│       ├── app.py
+│       ├── requirements.txt
+│       ├── Dockerfile
+│       ├── docker-compose.yml
+│       └── README.md
+└── scripts/                   (a criar conforme necessário)
 ```
+
+**Nota:** não existe pasta `docker/` própria — cada projeto carrega seu próprio
+`Dockerfile`/`docker-compose.yml` dentro de `projects/<nome>/`, e a documentação
+conceitual do Docker fica centralizada em [docker.md](docker.md).
 
 Por que a raiz fica no notebook e não no servidor: ver a decisão registrada em
 [arquitetura.md](arquitetura.md), seção 3.
@@ -192,9 +206,29 @@ Por que a raiz fica no notebook e não no servidor: ver a decisão registrada em
 
 ## 6. Aplicações e projetos hospedados
 
-*(Nenhum ainda — esta seção será preenchida conforme o laboratório evoluir.)*
+### Contador de Visitas
 
-Modelo que cada entrada vai seguir, quando o primeiro projeto chegar:
+- **O que é:** aplicação web mínima (Flask, em POO) que conta acessos, com o contador
+  persistido num banco Redis separado.
+- **Por que existe:** primeira prática de Docker Compose do laboratório — demonstra
+  build de imagem própria, comunicação entre containers pela rede interna do Compose,
+  volume nomeado e ordem de inicialização (`depends_on`). Também é a primeira peça de
+  portfólio do laboratório.
+- **Onde vive no servidor:** `~/srv-ubnt-lab/projects/contador-visitas/` (clone do
+  próprio repositório, ver seção 5)
+- **Onde vive no repositório:** [`projects/contador-visitas/`](../projects/contador-visitas/)
+- **Código explicado bloco a bloco:** [`notes/contador-visitas/app.py.md`](../notes/contador-visitas/app.py.md)
+- **Como iniciar:** `cd ~/srv-ubnt-lab/projects/contador-visitas && sudo docker compose up -d --build`
+- **Como parar:** `sudo docker compose down` (ou `down -v` para também apagar o volume/resetar o contador)
+- **Portas usadas:** `8000` (host) → `5000` (container, Flask)
+- **Como acessar:** `http://srv-ubnt-001:8000/` (via Tailscale ou LAN)
+- **Dependências:** Docker + Compose plugin instalados (ver [docker.md](docker.md))
+- **Documentação própria:** [`projects/contador-visitas/README.md`](../projects/contador-visitas/README.md)
+- **Atenção de segurança:** publicar portas via Docker contorna o `ufw` — ver
+  [seguranca.md](seguranca.md), item "Docker contornando o ufw", antes de publicar
+  qualquer porta nova em projetos futuros.
+
+Modelo para as próximas entradas:
 
 ```markdown
 ### <nome do projeto>
@@ -203,6 +237,7 @@ Modelo que cada entrada vai seguir, quando o primeiro projeto chegar:
 - **Por que existe:** o que ele ensina/serve no laboratório
 - **Onde vive no servidor:** caminho completo
 - **Onde vive no repositório:** `projects/<nome>/`
+- **Código explicado bloco a bloco:** `notes/<nome>/`
 - **Como iniciar:** comando(s)
 - **Como parar:** comando(s)
 - **Portas usadas:** lista
