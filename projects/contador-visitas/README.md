@@ -65,6 +65,10 @@ docker compose down -v     # parar tudo E apagar o volume (reseta o contador)
 
 ## Decisões técnicas
 
+- **Lógica de negócio em POO** (`ContadorVisitas`, em `app.py`) — a conexão com o Redis
+  e o incremento do contador ficam encapsulados numa classe, separados da camada de
+  rotas do Flask (que continua sendo funções decoradas, convenção do próprio framework).
+  Facilita testar a lógica isolada e reaproveitar a classe em outro contexto.
 - **Redis com volume nomeado**, não bind mount — deixa o Docker gerenciar onde os
   dados ficam fisicamente, mais simples para este caso de uso.
 - **`depends_on` sem healthcheck** — o Compose só garante que o Redis foi *iniciado*,
