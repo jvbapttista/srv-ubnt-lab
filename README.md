@@ -3,6 +3,9 @@
 Raiz oficial do laboratório. **Todo** material criado para o laboratório (documentação,
 scripts, compose, manifests, projetos, notas) vive aqui dentro.
 
+**Repositório:** [github.com/jvbapttista/srv-ubnt-lab](https://github.com/jvbapttista/srv-ubnt-lab)
+(público, versionado desde 2026-08-15)
+
 > Este diretório fica no **notebook de trabalho** (`NTB-UBUNTU`), não no servidor.
 > Ver [docs/arquitetura.md](docs/arquitetura.md) para entender por quê e como os
 > arquivos chegam ao servidor.
