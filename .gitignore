@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------
+# Segredos — NUNCA versionar
+# ---------------------------------------------------------------
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+id_ecdsa
+*_rsa
+*_ed25519
+!*.pub
+
+.env
+.env.*
+!.env.example
+*.secret
+secrets/
+credentials*
+*token*
+*.tfvars
+!*.tfvars.example
+
+# Estado do Tailscale / auth keys
+tailscale.state
+*authkey*
+
+# ---------------------------------------------------------------
+# Sistema operacional / editores
+# ---------------------------------------------------------------
+.DS_Store
+*~
+*.swp
+.idea/
+.vscode/
+
+# ---------------------------------------------------------------
+# Runtime / dados de container
+# ---------------------------------------------------------------
+data/
+volumes/
+*.log
+*.bak
