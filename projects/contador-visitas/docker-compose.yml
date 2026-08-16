@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .                 # constrói a imagem a partir do Dockerfile desta pasta
+    ports:
+      - "8000:5000"           # host:container — acessa em http://IP:8000, aplicação escuta na 5000
+    depends_on:
+      - redis                 # sobe o redis antes do web (não garante que já esteja "pronto", só "iniciado" — por isso o retry no app.py)
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine     # imagem oficial pronta, não construímos essa
+    volumes:
+      - redis-data:/data      # persiste os dados do Redis mesmo se o container for recriado
+    restart: unless-stopped
+
+volumes:
+  redis-data:                 # volume nomeado, gerenciado pelo próprio Docker
