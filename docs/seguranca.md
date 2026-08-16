@@ -442,6 +442,30 @@ apenas presumido.
 
 ---
 
+### ~~P1 — Docker contornando o `ufw`~~ — RESOLVIDO parcialmente em 2026-08-16
+
+**Risco encontrado:** ao publicar a primeira aplicação via Docker Compose (porta 8000,
+projeto [contador-visitas](../projects/contador-visitas/)), confirmou-se que o Docker
+manipula `iptables` diretamente, contornando por completo as regras do `ufw`. A porta
+ficou acessível de **qualquer origem da rede**, mesmo com o `ufw` negando tudo por
+padrão — risco idêntico ao que já tínhamos eliminado para o SSH, agora reaberto por
+uma superfície diferente (containers).
+
+**Correção aplicada:** regras na chain `DOCKER-USER` (mecanismo oficial do Docker,
+avaliado antes das regras automáticas dele), liberando só Tailscale e a LAN de casa,
+com `DROP` para qualquer outra origem — mesmo modelo de acesso já usado no `ufw` para
+o SSH. Detalhes técnicos completos em [docker.md](docker.md), seção 7.
+
+**Pendência restante:** as regras foram aplicadas ao vivo (`iptables -A ...`) e **não
+sobrevivem a um reboot** ainda — falta instalar `iptables-persistent` e validar com um
+reboot real. Até isso ser feito, um reboot do servidor reabre o risco original.
+
+**Vale para todo projeto futuro:** qualquer novo container que publicar porta precisa
+ser conferido contra esse mesmo problema — o `ufw` sozinho nunca vai proteger portas
+publicadas pelo Docker.
+
+---
+
 ### P3 — Itens de higiene
 
 - [ ] Criar `~/.ssh/config` no notebook (alias, usuário e chave explícitos)
@@ -450,6 +474,7 @@ apenas presumido.
 - [ ] IP de LAN fixo (ver [rede.md](rede.md))
 - [ ] Migrar de Wi-Fi para cabo
 - [ ] Revisar periodicamente os dispositivos autorizados no tailnet
+- [ ] Instalar `iptables-persistent` e validar as regras `DOCKER-USER` após reboot
 
 ## 3. Princípios adotados
 
@@ -472,3 +497,4 @@ apenas presumido.
 | 2026-08-15 | **P1 da senha no SSH resolvido.** `PasswordAuthentication no`, `PermitRootLogin no`, `X11Forwarding no` aplicados via `/etc/ssh/sshd_config.d/90-hardening.conf`. Encontrado e corrigido um problema real: `50-cloud-init.conf` (lido antes, por ordem alfabética) já definia `PasswordAuthentication yes`, e no `sshd_config` a **primeira** ocorrência de uma diretiva vence — nossa diretiva estava sendo ignorada em silêncio. Corrigido sobrescrevendo o valor no próprio `50-cloud-init.conf`. Validado: chave continua funcionando, senha explicitamente recusada (`Permission denied (publickey)`, sem `password` na lista). |
 | 2026-08-15 | **P2 do reboot resolvido.** `sudo reboot` executado como teste de resiliência. Checklist completo pós-boot: kernel `7.0.0-29-generic` em vigor, SSH/Tailscale/ufw/tampa/sensor de temperatura — todos voltaram sozinhos, sem intervenção manual. |
 | 2026-08-15 | **P2 da ausência de chave de recuperação resolvido.** Gerado par de chaves independente (`id_ed25519_recovery`, com passphrase), chave pública adicionada ao `authorized_keys` do servidor (sem remover a existente), chave privada guardada no gerenciador de senhas do usuário, fora do notebook. Testado login funcional com a chave nova. `ListenAddress` avaliado e mantido no padrão por decisão consciente (ver item anterior), confiando no `ufw`. |
+| 2026-08-16 | **Docker instalado** via repositório oficial e **primeiro projeto Compose** publicado (contador-visitas). **Risco real encontrado:** Docker contorna o `ufw`, expondo a porta 8000 a qualquer origem. **Corrigido parcialmente** com regras na chain `DOCKER-USER` (Tailscale + LAN liberados, resto em `DROP`) — persistência após reboot ainda pendente. |

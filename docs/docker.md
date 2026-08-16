@@ -126,13 +126,48 @@ Ainda sem nenhuma aplicação hospedada. Modelo previsto (ver [servidor.md](serv
 /opt/<nome-do-projeto>/data/   dados persistentes (volumes), fora do Git
 ```
 
-## 7. Atenção para o futuro — Docker e o `ufw`
+## 7. Docker e o `ufw` — problema real encontrado e resolvido
 
-O Docker manipula `iptables`/`nftables` **diretamente**, contornando as regras do `ufw`.
-Um container publicado com `-p 8080:80` fica acessível de fora mesmo que o `ufw` esteja
-bloqueando a porta 8080 — é uma das causas mais comuns de exposição acidental de serviço
-em ambientes com Docker. Precisa ser tratado explicitamente ao publicar a primeira
-aplicação (ver [seguranca.md](seguranca.md)).
+Confirmado na prática em 2026-08-16, com o primeiro projeto ([contador de
+visitas](../projects/contador-visitas/)): o Docker manipula `iptables` **diretamente**,
+contornando as regras do `ufw`. Publicar a porta 8000 (`ports: "8000:5000"` no Compose)
+tornou a aplicação acessível de **qualquer origem da rede**, mesmo com o `ufw`
+configurado para negar tudo por padrão — confirmado com:
+
+```bash
+sudo iptables -L DOCKER -n
+# ACCEPT tcp -- 0.0.0.0/0  <IP-do-container>  tcp dpt:5000
+```
+
+### Correção aplicada: chain `DOCKER-USER`
+
+O Docker reserva uma chain específica, `DOCKER-USER`, avaliada **antes** das regras
+automáticas do Docker — é o mecanismo oficial para o usuário reprender controle sobre
+o que alcança containers, sem precisar de ferramentas de terceiros (ex.: `ufw-docker`).
+
+```bash
+sudo iptables -A DOCKER-USER -i tailscale0 -j ACCEPT        # Tailscale, sempre liberado
+sudo iptables -A DOCKER-USER -s 192.168.15.0/24 -j ACCEPT   # LAN de casa
+sudo iptables -A DOCKER-USER -j DROP                         # qualquer outra origem
+```
+
+**Ordem importa:** `iptables` avalia regras em sequência e para na primeira que casar.
+As liberações (`ACCEPT`) precisam vir antes do bloqueio geral (`DROP`), que deve ser a
+**última** regra da chain.
+
+Validado com `sudo iptables -L DOCKER-USER -n -v --line-numbers` — ordem confirmada
+correta (tailscale0 → LAN → DROP).
+
+### ⚠️ Pendência: persistência após reboot
+
+As regras acima foram aplicadas **ao vivo**, via `iptables`. Elas **não sobrevivem a um
+reboot** por padrão — ao reiniciar, a chain `DOCKER-USER` volta vazia, e o risco de
+exposição total volta a existir até as regras serem recriadas manualmente.
+
+**Próximo passo (ainda não feito):** instalar `iptables-persistent` (pacote
+`netfilter-persistent`) para salvar essas regras e restaurá-las automaticamente no boot,
+e depois **validar com um reboot real** — mesmo procedimento que já fizemos para o
+restante do hardening do servidor.
 
 ## 8. Troubleshooting
 
