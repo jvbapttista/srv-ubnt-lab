@@ -38,6 +38,7 @@ porta 22 na internet. Detalhes em [docs/ssh.md](docs/ssh.md) e
 | [docs/ssh.md](docs/ssh.md) | Servidor e cliente SSH, chaves, configuração atual, hardening pendente |
 | [docs/tailscale.md](docs/tailscale.md) | Rede privada, dispositivos, comandos, troubleshooting |
 | [docs/seguranca.md](docs/seguranca.md) | Postura atual, riscos abertos, pendências priorizadas |
+| [docs/docker.md](docs/docker.md) | Instalação, conceitos, decisão sobre o grupo `docker`, comandos do dia a dia |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Problemas reais encontrados, causa e solução |
 
 ## Estado do laboratório
@@ -52,8 +53,8 @@ Etapas concluídas:
       desativada, reboot validado, `ListenAddress` avaliado, chave de recuperação criada
       (todos os P0/P1/P2 de [docs/seguranca.md](docs/seguranca.md) resolvidos)
 - [x] Git/GitHub para este repositório — [github.com/jvbapttista/srv-ubnt-lab](https://github.com/jvbapttista/srv-ubnt-lab)
-- [ ] **Docker — próxima etapa, a partir daqui**
-- [ ] Docker Compose
+- [x] Docker instalado (v29.7.2 + Compose v5.4.0) — ver [docs/docker.md](docs/docker.md)
+- [ ] **Docker Compose (primeiro projeto multi-container) — próxima etapa**
 - [ ] Aplicações
 - [ ] Monitoramento / Observabilidade
 - [ ] Kubernetes

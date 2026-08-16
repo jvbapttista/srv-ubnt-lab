@@ -139,7 +139,7 @@ Documentação completa (conceitos, ACLs, troubleshooting) em [tailscale.md](tai
 | Firewall (`ufw`) | ativo | libera SSH só via LAN e Tailscale — ver [seguranca.md](seguranca.md) |
 | `lm-sensors` | instalado | monitoramento de temperatura sob demanda (`sensors`) |
 | `unattended-upgrades` | ativo | atualizações de segurança automáticas |
-| Docker | **não instalado ainda** | próxima etapa do laboratório |
+| Docker | ativo, `v29.7.2` + Compose `v5.4.0` | instalado via repo oficial em 2026-08-16, ver [docker.md](docker.md) |
 
 Nenhuma aplicação ou projeto hospedado até o momento. Esta tabela será atualizada
 conforme novos serviços entrarem.
