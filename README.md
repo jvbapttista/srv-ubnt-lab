@@ -47,16 +47,20 @@ Etapas concluídas:
 - [x] Instalação do Ubuntu Server no hardware físico
 - [x] Acesso SSH por chave pública
 - [x] Tailscale instalado e autenticado nas duas máquinas
-- [x] Documentação inicial do estado real (este commit)
-- [x] Estabilizar o servidor: tampa não suspende mais + firewall ativo (P0s de [docs/seguranca.md](docs/seguranca.md) resolvidos)
-- [ ] Riscos restantes (P1/P2/P3) em [docs/seguranca.md](docs/seguranca.md) — senha do SSH ainda habilitada, reboot com kernel pendente, etc.
-- [ ] Git/GitHub para este repositório
-- [ ] Docker
+- [x] Documentação inicial do estado real
+- [x] Estabilizar o servidor: tampa não suspende mais, firewall ativo, senha SSH
+      desativada, reboot validado, `ListenAddress` avaliado, chave de recuperação criada
+      (todos os P0/P1/P2 de [docs/seguranca.md](docs/seguranca.md) resolvidos)
+- [x] Git/GitHub para este repositório — [github.com/jvbapttista/srv-ubnt-lab](https://github.com/jvbapttista/srv-ubnt-lab)
+- [ ] **Docker — próxima etapa, a partir daqui**
 - [ ] Docker Compose
 - [ ] Aplicações
 - [ ] Monitoramento / Observabilidade
 - [ ] Kubernetes
 - [ ] Integração com OCI
+
+Pendências menores (P3, sem urgência) em [docs/seguranca.md](docs/seguranca.md):
+`~/.ssh/config`, IP de LAN fixo, cabo de rede, passphrase na chave principal.
 
 ## Convenções
 
