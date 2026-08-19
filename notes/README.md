@@ -32,4 +32,4 @@ for removido ou mudar de comportamento, a nota é ajustada na mesma hora, não d
 
 | Projeto | Arquivos explicados |
 |---|---|
-| [contador-visitas](contador-visitas/) | [app.py.md](contador-visitas/app.py.md) |
+| *(nenhum ainda — contador-visitas foi cancelado em 2026-08-16; FileHub é o projeto atual)* | — |

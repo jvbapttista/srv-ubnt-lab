@@ -39,6 +39,7 @@ porta 22 na internet. Detalhes em [docs/ssh.md](docs/ssh.md) e
 | [docs/tailscale.md](docs/tailscale.md) | Rede privada, dispositivos, comandos, troubleshooting |
 | [docs/seguranca.md](docs/seguranca.md) | Postura atual, riscos abertos, pendências priorizadas |
 | [docs/docker.md](docs/docker.md) | Instalação, conceitos, decisão sobre o grupo `docker`, Docker vs `ufw`, comandos do dia a dia |
+| [docs/filehub-arquitetura.md](docs/filehub-arquitetura.md) | Arquitetura completa do projeto FileHub — em discussão |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Problemas reais encontrados, causa e solução |
 | [notes/](notes/) | Código explicado bloco por bloco — material de estudo, separado da documentação de infraestrutura |
 
@@ -55,9 +56,12 @@ Etapas concluídas:
       (todos os P0/P1/P2 de [docs/seguranca.md](docs/seguranca.md) resolvidos)
 - [x] Git/GitHub para este repositório — [github.com/jvbapttista/srv-ubnt-lab](https://github.com/jvbapttista/srv-ubnt-lab)
 - [x] Docker instalado (v29.7.2 + Compose v5.4.0) — ver [docs/docker.md](docs/docker.md)
-- [x] Primeiro projeto Compose: [Contador de Visitas](projects/contador-visitas/) (Flask em POO + Redis)
-- [ ] **Instalar `iptables-persistent` e validar regras `DOCKER-USER` após reboot — próximo passo**
-- [ ] Mais aplicações/projetos
+- [x] ~~Contador de Visitas~~ (Flask + Redis) — cancelado em 2026-08-16, sem valor de
+      portfólio; serviu de aprendizado de Compose e revelou o achado real de segurança
+      documentado abaixo
+- [ ] Instalar `iptables-persistent` e validar regras `DOCKER-USER` após reboot
+- [ ] **FileHub** — plataforma pessoal de armazenamento de arquivos, projeto atual, em
+      fase de arquitetura. Ver [docs/filehub-arquitetura.md](docs/filehub-arquitetura.md)
 - [ ] Monitoramento / Observabilidade
 - [ ] Kubernetes
 - [ ] Integração com OCI

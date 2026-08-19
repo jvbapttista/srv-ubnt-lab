@@ -140,7 +140,6 @@ Documentação completa (conceitos, ACLs, troubleshooting) em [tailscale.md](tai
 | `lm-sensors` | instalado | monitoramento de temperatura sob demanda (`sensors`) |
 | `unattended-upgrades` | ativo | atualizações de segurança automáticas |
 | Docker | ativo, `v29.7.2` + Compose `v5.4.0` | instalado via repo oficial em 2026-08-16, ver [docker.md](docker.md) |
-| Contador de Visitas (Flask + Redis) | ativo, via Compose | primeiro projeto hospedado — ver seção 6 |
 
 Esta tabela é atualizada conforme novos serviços/projetos entrarem.
 
@@ -182,16 +181,9 @@ Toda a documentação, scripts e configuração versionável do laboratório fic
 │   ├── servidor.md            ← este arquivo
 │   └── troubleshooting.md
 ├── notes/                     código explicado, bloco por bloco (estudo/referência)
-│   ├── README.md
-│   └── contador-visitas/
-│       └── app.py.md
+│   └── README.md
 ├── projects/                  código funcional de cada projeto hospedado
-│   └── contador-visitas/
-│       ├── app.py
-│       ├── requirements.txt
-│       ├── Dockerfile
-│       ├── docker-compose.yml
-│       └── README.md
+│   └── filehub/               (em fase de arquitetura — ver docs/filehub-arquitetura.md)
 └── scripts/                   (a criar conforme necessário)
 ```
 
@@ -206,29 +198,16 @@ Por que a raiz fica no notebook e não no servidor: ver a decisão registrada em
 
 ## 6. Aplicações e projetos hospedados
 
-### Contador de Visitas
+*(Nenhum ainda no ar. O projeto "Contador de Visitas" foi cancelado em 2026-08-16 —
+serviu de aprendizado de Docker Compose, mas não agregava valor de portfólio. O
+achado de segurança que ele revelou (Docker contorna o `ufw`) e a correção via
+`DOCKER-USER` continuam válidos e documentados em [seguranca.md](seguranca.md).)*
 
-- **O que é:** aplicação web mínima (Flask, em POO) que conta acessos, com o contador
-  persistido num banco Redis separado.
-- **Por que existe:** primeira prática de Docker Compose do laboratório — demonstra
-  build de imagem própria, comunicação entre containers pela rede interna do Compose,
-  volume nomeado e ordem de inicialização (`depends_on`). Também é a primeira peça de
-  portfólio do laboratório.
-- **Onde vive no servidor:** `~/srv-ubnt-lab/projects/contador-visitas/` (clone do
-  próprio repositório, ver seção 5)
-- **Onde vive no repositório:** [`projects/contador-visitas/`](../projects/contador-visitas/)
-- **Código explicado bloco a bloco:** [`notes/contador-visitas/app.py.md`](../notes/contador-visitas/app.py.md)
-- **Como iniciar:** `cd ~/srv-ubnt-lab/projects/contador-visitas && sudo docker compose up -d --build`
-- **Como parar:** `sudo docker compose down` (ou `down -v` para também apagar o volume/resetar o contador)
-- **Portas usadas:** `8000` (host) → `5000` (container, Flask)
-- **Como acessar:** `http://srv-ubnt-001:8000/` (via Tailscale ou LAN)
-- **Dependências:** Docker + Compose plugin instalados (ver [docker.md](docker.md))
-- **Documentação própria:** [`projects/contador-visitas/README.md`](../projects/contador-visitas/README.md)
-- **Atenção de segurança:** publicar portas via Docker contorna o `ufw` — ver
-  [seguranca.md](seguranca.md), item "Docker contornando o ufw", antes de publicar
-  qualquer porta nova em projetos futuros.
+**Projeto atual: FileHub** — plataforma pessoal de armazenamento de arquivos, em fase
+de arquitetura. Ver [`docs/filehub-arquitetura.md`](filehub-arquitetura.md) e
+[`projects/filehub/`](../projects/filehub/).
 
-Modelo para as próximas entradas:
+Modelo para as próximas entradas, quando o FileHub (ou outro projeto) for hospedado:
 
 ```markdown
 ### <nome do projeto>
