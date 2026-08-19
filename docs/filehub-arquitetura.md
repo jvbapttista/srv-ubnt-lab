@@ -1,9 +1,12 @@
 # FileHub — Arquitetura (Fase 0)
 
-Documento vivo — evolui conforme discutirmos e revisarmos decisões. **Nenhum código foi
-escrito ainda**, de propósito: esta é a etapa de projeto, antes de qualquer implementação.
+Documento vivo — evolui conforme discutirmos e revisarmos decisões.
 
-Última atualização: 2026-08-16
+**Status: arquitetura aprovada em 2026-08-18** (os 4 pontos da seção "Próximo passo"
+foram confirmados pelo autor, sem ressalvas). Implementação iniciada — ver
+[docs/filehub-progresso.md](filehub-progresso.md) para o estado atual do código.
+
+Última atualização: 2026-08-18
 
 ---
 
