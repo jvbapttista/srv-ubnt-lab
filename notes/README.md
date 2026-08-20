@@ -33,3 +33,4 @@ for removido ou mudar de comportamento, a nota é ajustada na mesma hora, não d
 | Projeto | Arquivos explicados |
 |---|---|
 | [filehub](filehub/) | [app/main.py.md](filehub/app/main.py.md) |
+| [nextcloud](nextcloud/) | [docker-compose.yml.md](nextcloud/docker-compose.yml.md) |
