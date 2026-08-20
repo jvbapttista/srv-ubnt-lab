@@ -2,9 +2,11 @@
 
 Documento vivo — evolui conforme discutirmos e revisarmos decisões.
 
-**Status: arquitetura aprovada em 2026-08-18** (os 4 pontos da seção "Próximo passo"
-foram confirmados pelo autor, sem ressalvas). Implementação iniciada — ver
-[docs/filehub-progresso.md](filehub-progresso.md) para o estado atual do código.
+**Status: arquitetura aprovada em 2026-08-18, implementação PAUSADA (não cancelada)**
+na mesma data — o autor decidiu priorizar aprender Docker/Linux na prática, rodando
+aplicações self-hosted já existentes (Nextcloud, CasaOS, etc.), antes de continuar o
+desenvolvimento próprio. Este documento continua válido para quando o projeto for
+retomado. Ver [docs/filehub-progresso.md](filehub-progresso.md) para detalhes.
 
 Última atualização: 2026-08-18
 

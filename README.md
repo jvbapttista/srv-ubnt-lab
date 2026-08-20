@@ -61,10 +61,13 @@ Etapas concluídas:
       portfólio; serviu de aprendizado de Compose e revelou o achado real de segurança
       documentado abaixo
 - [ ] Instalar `iptables-persistent` e validar regras `DOCKER-USER` após reboot
-- [ ] **FileHub** — plataforma pessoal de armazenamento de arquivos, projeto atual.
-      Arquitetura aprovada, Fases 1–2 concluídas (esqueleto + FastAPI/`health`). Ver
+- [ ] ⏸️ **FileHub** — pausado (não cancelado) em 2026-08-18, Fases 1-2 concluídas
+      (esqueleto + FastAPI/`health`). Retomar quando fizer sentido. Ver
       [docs/filehub-arquitetura.md](docs/filehub-arquitetura.md) e
       [docs/filehub-progresso.md](docs/filehub-progresso.md)
+- [ ] **Direção atual: aplicações self-hosted prontas** (Nextcloud, CasaOS, etc.) para
+      organizar e evoluir o homelab na prática, combinado com estudo estruturado
+      (cursos, Udemy, YouTube)
 - [ ] Monitoramento / Observabilidade
 - [ ] Kubernetes
 - [ ] Integração com OCI

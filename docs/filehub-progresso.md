@@ -4,6 +4,18 @@ Acompanhamento das fases definidas em [filehub-arquitetura.md](filehub-arquitetu
 seção 15. Este documento muda a cada sessão de trabalho; a arquitetura em si (as
 decisões e seus porquês) fica estável em `filehub-arquitetura.md`.
 
+## ⏸️ PAUSADO em 2026-08-18 — não cancelado
+
+Decisão do autor: priorizar, por ora, rodar e aprender com aplicações self-hosted já
+existentes (Nextcloud, CasaOS, etc.) para organizar e evoluir o homelab na prática,
+combinado com estudo estruturado (cursos, Udemy, YouTube). O FileHub volta a ser
+desenvolvido quando fizer sentido, com mais bagagem prática acumulada.
+
+**Nada foi removido** — código, arquitetura e explicações permanecem no repositório
+exatamente como estão, prontos para retomar de onde paramos (Fase 3 seria o próximo
+passo: PostgreSQL + SQLAlchemy + Alembic, com a decisão síncrono-vs-assíncrono ainda
+em aberto).
+
 Última atualização: 2026-08-18
 
 ## Ambiente de desenvolvimento
