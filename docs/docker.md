@@ -158,16 +158,53 @@ As liberações (`ACCEPT`) precisam vir antes do bloqueio geral (`DROP`), que de
 Validado com `sudo iptables -L DOCKER-USER -n -v --line-numbers` — ordem confirmada
 correta (tailscale0 → LAN → DROP).
 
-### ⚠️ Pendência: persistência após reboot
+### Segundo problema real: faltava regra para o tráfego de RETORNO
 
-As regras acima foram aplicadas **ao vivo**, via `iptables`. Elas **não sobrevivem a um
-reboot** por padrão — ao reiniciar, a chain `DOCKER-USER` volta vazia, e o risco de
-exposição total volta a existir até as regras serem recriadas manualmente.
+Ao publicar o Nextcloud (porta 8080) em 2026-08-19, o acesso via Tailscale/navegador
+travava indefinidamente (timeout), mesmo com as regras acima aparentemente corretas.
+Diagnóstico com uma regra `LOG` temporária na chain revelou a causa: as regras só
+liberavam o tráfego de **entrada** (por interface/origem), mas a **resposta** do
+container (`SYN ACK` voltando pro cliente) tem origem no bridge do Docker
+(`br-...`), não bate com nenhuma regra de liberação, e caía no `DROP` final.
 
-**Próximo passo (ainda não feito):** instalar `iptables-persistent` (pacote
-`netfilter-persistent`) para salvar essas regras e restaurá-las automaticamente no boot,
-e depois **validar com um reboot real** — mesmo procedimento que já fizemos para o
-restante do hardening do servidor.
+**Correção:** adicionar uma regra de conexão **estabelecida**, no topo da chain —
+padrão universal para qualquer firewall com estado:
+
+```bash
+sudo iptables -I DOCKER-USER 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+```
+
+**Lição geral:** toda regra de "aceitar só de tal origem" precisa vir acompanhada de uma
+regra "aceitar retorno de conexões já estabelecidas" — sem isso, a resposta do próprio
+serviço fica bloqueada, mesmo com o pedido original tendo sido aceito.
+
+Ordem final correta, validada com `sudo iptables -L DOCKER-USER -n -v --line-numbers`:
+
+```text
+1  ACCEPT  ctstate RELATED,ESTABLISHED
+2  ACCEPT  in tailscale0
+3  ACCEPT  from 192.168.15.0/24
+4  DROP    tudo o resto
+```
+
+### ⚠️ Terceiro problema real: `iptables-persistent` removeu o `ufw`
+
+Ao instalar `iptables-persistent` (2026-08-19) para finalmente persistir as regras
+acima, o `apt` **removeu o pacote `ufw`** como parte da mesma transação — os dois
+pacotes conflitam nesta versão do Ubuntu (26.04 "resolute"), aparentemente por ambos
+tentarem gerenciar a persistência de regras do `iptables` à sua maneira.
+
+**Risco:** as regras do `ufw` que protegiam o SSH (só LAN + Tailscale) continuam **ativas
+no kernel neste exato momento** (remover o pacote não flusha regras já carregadas), mas
+**não sobreviveriam a um reboot** — o serviço que as recarregaria (`ufw.service`) não
+existe mais, e o `netfilter-persistent save` salvou as chains do `ufw` **vazias**
+(confirmado via `grep "^-A ufw" /etc/iptables/rules.v4` — nenhum resultado), só as
+regras `DOCKER-USER` foram persistidas corretamente.
+
+**Decisão tomada (2026-08-19):** migrar a proteção do SSH de `ufw` para regras
+`iptables` puras na chain `INPUT`, unificando tudo num único mecanismo de persistência
+(`iptables-persistent`), em vez de dois se conflitando. **Implementação pendente para a
+próxima sessão** — ver [seguranca.md](seguranca.md) para o estado detalhado e o plano.
 
 ## 8. Troubleshooting
 

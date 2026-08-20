@@ -466,6 +466,40 @@ publicadas pelo Docker.
 
 ---
 
+### 🔴 P0 (NOVO, regressão) — `ufw` removido pelo `iptables-persistent`, SSH sem persistência de firewall
+
+**Introduzido em 2026-08-19**, durante a instalação do `iptables-persistent` (para
+finalmente resolver a pendência antiga de persistir as regras `DOCKER-USER`). Os dois
+pacotes conflitam nesta versão do Ubuntu — instalar um removeu o outro (`ufw`).
+
+**Estado atual (verificado nesta data):**
+
+- As regras do `ufw` que protegiam o SSH (só LAN `192.168.15.0/24` + interface
+  `tailscale0`) **continuam ativas no kernel agora** — confirmado via
+  `sudo iptables -L INPUT -n -v`, contadores de pacotes não-zerados nas chains
+  `ufw-before-input`/`ufw-after-input`. **O servidor está protegido neste momento.**
+- **Não sobrevivem a um reboot.** O serviço `ufw.service` que as recarregaria não
+  existe mais (pacote removido), e o `netfilter-persistent save` gravou essas chains
+  **vazias** em `/etc/iptables/rules.v4` (confirmado: `grep "^-A ufw"` não retorna
+  nada — só as chains foram declaradas, sem as regras de verdade dentro).
+- Reboot antes da correção = SSH volta a escutar sem restrição de origem em
+  `0.0.0.0/0` (mesmo risco do IPv6 global que já resolvemos uma vez, reaberto).
+
+**Avaliação de risco imediato (2026-08-19, antes de pausar a sessão):** baixo — nenhum
+reboot está planejado, e o `unattended-upgrades` não reinicia automaticamente por
+padrão. Risco residual só por causa física (queda de energia), fora de controle e
+preexistente a este incidente.
+
+**Plano combinado para a próxima sessão:** migrar a proteção do SSH de `ufw` para
+regras `iptables` puras na chain `INPUT` (mesma lógica: liberar LAN + `tailscale0` +
+conexões estabelecidas, `DROP` no resto), unificando tudo sob o `iptables-persistent`
+em vez de dois mecanismos conflitantes. **Não fazer reboot do servidor antes dessa
+correção estar aplicada e validada.**
+
+Detalhes técnicos completos em [docker.md](docker.md), seção 7.
+
+---
+
 ### P3 — Itens de higiene
 
 - [ ] Criar `~/.ssh/config` no notebook (alias, usuário e chave explícitos)
@@ -498,3 +532,4 @@ publicadas pelo Docker.
 | 2026-08-15 | **P2 do reboot resolvido.** `sudo reboot` executado como teste de resiliência. Checklist completo pós-boot: kernel `7.0.0-29-generic` em vigor, SSH/Tailscale/ufw/tampa/sensor de temperatura — todos voltaram sozinhos, sem intervenção manual. |
 | 2026-08-15 | **P2 da ausência de chave de recuperação resolvido.** Gerado par de chaves independente (`id_ed25519_recovery`, com passphrase), chave pública adicionada ao `authorized_keys` do servidor (sem remover a existente), chave privada guardada no gerenciador de senhas do usuário, fora do notebook. Testado login funcional com a chave nova. `ListenAddress` avaliado e mantido no padrão por decisão consciente (ver item anterior), confiando no `ufw`. |
 | 2026-08-16 | **Docker instalado** via repositório oficial e **primeiro projeto Compose** publicado (contador-visitas). **Risco real encontrado:** Docker contorna o `ufw`, expondo a porta 8000 a qualquer origem. **Corrigido parcialmente** com regras na chain `DOCKER-USER` (Tailscale + LAN liberados, resto em `DROP`) — persistência após reboot ainda pendente. |
+| 2026-08-19 | Nextcloud instalado. **Segundo problema real encontrado:** faltava regra `ESTABLISHED,RELATED` na chain `DOCKER-USER` — o tráfego de retorno do container caía no `DROP`, causando timeout no acesso. Corrigido. Ao instalar `iptables-persistent` para finalmente persistir essas regras, **`ufw` foi removido pelo `apt`** (pacotes conflitantes). SSH continua protegido *ao vivo* (regras ainda no kernel), mas **não sobreviveria a um reboot** — persistência do `ufw` ficou vazia. Reclassificado como **P0 novo**. Plano: migrar SSH para `iptables` puro na próxima sessão, antes de qualquer reboot. |

@@ -140,6 +140,8 @@ Documentação completa (conceitos, ACLs, troubleshooting) em [tailscale.md](tai
 | `lm-sensors` | instalado | monitoramento de temperatura sob demanda (`sensors`) |
 | `unattended-upgrades` | ativo | atualizações de segurança automáticas |
 | Docker | ativo, `v29.7.2` + Compose `v5.4.0` | instalado via repo oficial em 2026-08-16, ver [docker.md](docker.md) |
+| Nextcloud (MariaDB + app) | ativo, via Compose | primeiro app self-hosted — ver seção 6 |
+| `ufw` | **removido** (2026-08-19) | conflito com `iptables-persistent` — ver alerta na seção 7 |
 
 Esta tabela é atualizada conforme novos serviços/projetos entrarem.
 
@@ -198,16 +200,30 @@ Por que a raiz fica no notebook e não no servidor: ver a decisão registrada em
 
 ## 6. Aplicações e projetos hospedados
 
-*(Nenhum ainda no ar. O projeto "Contador de Visitas" foi cancelado em 2026-08-16 —
-serviu de aprendizado de Docker Compose, mas não agregava valor de portfólio. O
-achado de segurança que ele revelou (Docker contorna o `ufw`) e a correção via
-`DOCKER-USER` continuam válidos e documentados em [seguranca.md](seguranca.md).)*
+### Nextcloud
 
-**Projeto atual: FileHub** — plataforma pessoal de armazenamento de arquivos, em fase
-de arquitetura. Ver [`docs/filehub-arquitetura.md`](filehub-arquitetura.md) e
-[`projects/filehub/`](../projects/filehub/).
+- **O que é:** suíte self-hosted de armazenamento/colaboração (MariaDB + Nextcloud via
+  Docker Compose "clássico").
+- **Por que existe:** aprender Docker/Linux na prática rodando aplicações reais,
+  enquanto o desenvolvimento do FileHub está pausado (ver abaixo).
+- **Onde vive no servidor:** `~/srv-ubnt-lab/projects/nextcloud/`
+- **Onde vive no repositório:** [`projects/nextcloud/`](../projects/nextcloud/)
+- **Código explicado bloco a bloco:** [`notes/nextcloud/`](../notes/nextcloud/)
+- **Como iniciar:** `cd ~/srv-ubnt-lab/projects/nextcloud && sudo docker compose up -d`
+- **Como parar:** `sudo docker compose down` (dados persistem nos volumes)
+- **Portas usadas:** `8080` (host) → `80` (container)
+- **Como acessar:** `http://srv-ubnt-001:8080`
+- **Dependências:** Docker + Compose (ver [docker.md](docker.md))
+- **Documentação própria:** [`projects/nextcloud/README.md`](../projects/nextcloud/README.md)
+- **Atenção:** ver alerta de segurança na seção 7 — SSH sem persistência de firewall
+  até a próxima correção.
 
-Modelo para as próximas entradas, quando o FileHub (ou outro projeto) for hospedado:
+*(O projeto "Contador de Visitas" foi cancelado em 2026-08-16 — serviu de aprendizado
+de Docker Compose, mas não agregava valor de portfólio. O FileHub está **pausado, não
+cancelado** desde 2026-08-18 — ver [`docs/filehub-arquitetura.md`](filehub-arquitetura.md)
+e [`projects/filehub/`](../projects/filehub/) para retomar quando fizer sentido.)*
+
+Modelo para as próximas entradas:
 
 ```markdown
 ### <nome do projeto>
@@ -229,15 +245,23 @@ Modelo para as próximas entradas, quando o FileHub (ou outro projeto) for hospe
 
 ## 7. Estado das pendências de segurança
 
+> 🔴 **ATENÇÃO — ler antes de reiniciar o servidor por qualquer motivo (2026-08-19):**
+> o `ufw` foi removido durante a instalação do `iptables-persistent` (conflito de
+> pacotes). A proteção do SSH continua ativa **agora, ao vivo**, mas **não sobrevive a
+> um reboot**. Plano: migrar para `iptables` puro na próxima sessão, **antes** de
+> qualquer reboot (intencional ou não). Detalhes em [seguranca.md](seguranca.md).
+
 Resumo rápido — detalhes completos, riscos e como cada um foi resolvido em
 [seguranca.md](seguranca.md):
 
 - [x] Servidor não suspende mais ao fechar a tampa
-- [x] Firewall ativo (SSH liberado só para LAN e Tailscale)
+- [x] Firewall ativo (SSH liberado só para LAN e Tailscale) — ⚠️ ver alerta acima, persistência quebrada em 2026-08-19
 - [x] Autenticação por senha desativada no SSH
 - [x] Reboot feito — kernel `7.0.0-29-generic` em vigor, checklist pós-boot 100% ok
-- [x] SSH escutando em todas as interfaces — decisão consciente de manter assim, mitigado pelo `ufw` (restringir o bind arriscaria o SSH não subir no boot)
+- [x] SSH escutando em todas as interfaces — decisão consciente de manter assim, mitigado pelo firewall (restringir o bind arriscaria o SSH não subir no boot)
 - [x] Chave de recuperação criada e guardada fora do notebook (ver seção 2)
+- [x] Docker vs firewall: chain `DOCKER-USER` configurada e persistida corretamente (`iptables-persistent`)
+- [ ] **Migrar proteção do SSH para `iptables` puro (substituindo o `ufw` removido)**
 - [ ] IP de LAN fixo
 - [ ] Migrar de Wi-Fi para cabo
 
